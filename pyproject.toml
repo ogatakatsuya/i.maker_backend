@@ -4,12 +4,21 @@ version = "0.1.0"
 description = ""
 authors = ["Katsuya Ogata"]
 readme = "README.md"
-packages = [{include = "i"}]
+packages = [
+    { include = "src" },
+    { include = "lib" },
+]
 
 [tool.poetry.dependencies]
 python = "^3.9"
 fastapi = "^0.115.0"
 uvicorn = {extras = ["standard"], version = "^0.30.6"}
+alembic = "^1.13.2"
+sqlalchemy = "^2.0.35"
+aiomysql = "^0.2.0"
+sqlalchemy-utils = "^0.41.2"
+pydantic-settings = "^2.5.2"
+starlette = "^0.38.5"
 
 
 [build-system]

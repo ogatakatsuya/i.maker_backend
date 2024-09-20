@@ -7,3 +7,27 @@ services:
       - .:/src
     ports:
       - 8000:8000
+    networks:
+      - i.maker-network
+
+  db:
+    image: mysql:8.0
+    container_name: db_i.maker
+    environment:
+      MYSQL_ROOT_PASSWORD: root_password
+      MYSQL_DATABASE: db
+      MYSQL_USER: i.maker
+      MYSQL_PASSWORD: password
+      TZ: 'Asia/Tokyo'
+    ports:
+      - "3306:3306"
+    volumes:
+      - mysql_data:/var/lib/mysql
+    networks:
+      - i.maker-network
+
+volumes:
+  mysql_data:
+
+networks:
+  i.maker-network:
