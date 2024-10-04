@@ -1,7 +1,11 @@
+from datetime import datetime, timedelta, timezone
+
 from sqlalchemy.ext.declarative import declarative_base
-from sqlalchemy import Column, Integer, String, ForeignKey, UniqueConstraint
+from sqlalchemy import Column, Integer, String, ForeignKey, UniqueConstraint, DateTime
 
 Base = declarative_base()
+
+jp_tz = timezone(timedelta(hours=9))
     
 class QuizSet(Base):
     __tablename__ = 'quiz_sets'
@@ -31,6 +35,7 @@ class Group(Base):
     id = Column(Integer, primary_key=True, autoincrement=True)
     name = Column(String(100), nullable=False)
     score = Column(Integer)
+    played_at = Column(DateTime, default=lambda: datetime.now(jp_tz), nullable=False)
     quiz_set_id = Column(Integer, ForeignKey('quiz_sets.id', ondelete="CASCADE"), nullable=False)
     
     __table_args__ = (UniqueConstraint('name', 'quiz_set_id', name='unique_group_name'),)
