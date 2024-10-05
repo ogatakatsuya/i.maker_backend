@@ -17,4 +17,5 @@ class Env(BaseSettings):
         extra="ignore",
     )
 
+
 env = Env()

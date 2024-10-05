@@ -6,36 +6,48 @@ from sqlalchemy import Column, Integer, String, ForeignKey, UniqueConstraint, Da
 Base = declarative_base()
 
 jp_tz = timezone(timedelta(hours=9))
-    
+
+
 class QuizSet(Base):
-    __tablename__ = 'quiz_sets'
+    __tablename__ = "quiz_sets"
 
     id = Column(Integer, primary_key=True, autoincrement=True)
     title = Column(String(100), nullable=False)
     description = Column(String(1000), nullable=True)
-    
+
+
 class Question(Base):
-    __tablename__ = 'questions'
-    
+    __tablename__ = "questions"
+
     id = Column(Integer, primary_key=True, autoincrement=True)
     content = Column(String(1000), nullable=False)
     hint = Column(String(1000), nullable=True)
-    quiz_set_id = Column(Integer, ForeignKey('quiz_sets.id', ondelete="CASCADE"), nullable=False)
-    
+    quiz_set_id = Column(
+        Integer, ForeignKey("quiz_sets.id", ondelete="CASCADE"), nullable=False
+    )
+
+
 class Answer(Base):
-    __tablename__ = 'answers'
-    
+    __tablename__ = "answers"
+
     id = Column(Integer, primary_key=True, autoincrement=True)
     content = Column(String(1000), nullable=False)
-    question_id = Column(Integer, ForeignKey('questions.id', ondelete="CASCADE"), nullable=False)
-    
+    question_id = Column(
+        Integer, ForeignKey("questions.id", ondelete="CASCADE"), nullable=False
+    )
+
+
 class Group(Base):
-    __tablename__ = 'groups'
+    __tablename__ = "groups"
 
     id = Column(Integer, primary_key=True, autoincrement=True)
     name = Column(String(100), nullable=False)
     score = Column(Integer)
     played_at = Column(DateTime, default=lambda: datetime.now(jp_tz), nullable=False)
-    quiz_set_id = Column(Integer, ForeignKey('quiz_sets.id', ondelete="CASCADE"), nullable=False)
-    
-    __table_args__ = (UniqueConstraint('name', 'quiz_set_id', name='unique_group_name'),)
+    quiz_set_id = Column(
+        Integer, ForeignKey("quiz_sets.id", ondelete="CASCADE"), nullable=False
+    )
+
+    __table_args__ = (
+        UniqueConstraint("name", "quiz_set_id", name="unique_group_name"),
+    )
