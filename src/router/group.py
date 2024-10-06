@@ -1,28 +1,40 @@
 import pymysql
-
 from fastapi import APIRouter, Depends, HTTPException
 from sqlalchemy.ext.asyncio import AsyncSession
+
 import src.service.group as group_service
+from src.db.session import get_db
 from src.schema.group import (
     CreateGroupRequest,
-    RegisterScoreRequest,
     CreateGroupResponse,
-    RegisterScoreResponse,
-    GetGroupsResponse,
     GetGroupsByQuizSetIdResponse,
+    GetGroupsResponse,
+    RegisterScoreRequest,
+    RegisterScoreResponse,
 )
-from src.db.session import get_db
 
 router = APIRouter()
 
 
-@router.get("/groups", response_model=GetGroupsResponse)
+@router.get(
+    "/groups",
+    response_model=GetGroupsResponse,
+    name="get_groups",
+    description="Get all groups",
+    operation_id="get_groups",
+)
 async def get_groups(db: AsyncSession = Depends(get_db)):
     groups = await group_service.get_groups(db)
     return GetGroupsResponse(groups=groups)
 
 
-@router.get("/groups/{quiz_set_id}", response_model=GetGroupsByQuizSetIdResponse)
+@router.get(
+    "/groups/{quiz_set_id}",
+    response_model=GetGroupsByQuizSetIdResponse,
+    name="get_groups_by_quiz_set_id",
+    description="Get all groups by quiz set ID",
+    operation_id="get_groups_by_quiz_set_id",
+)
 async def get_groups_by_quiz_set_id(
     quiz_set_id: int, db: AsyncSession = Depends(get_db)
 ):
@@ -30,7 +42,13 @@ async def get_groups_by_quiz_set_id(
     return GetGroupsByQuizSetIdResponse(groups=groups)
 
 
-@router.post("/groups/{quiz_set_id}")
+@router.post(
+    "/groups/{quiz_set_id}",
+    response_model=CreateGroupResponse,
+    name="register_group",
+    description="Register a group",
+    operation_id="register_group",
+)
 async def register_group(
     group_info: CreateGroupRequest, quiz_set_id: int, db: AsyncSession = Depends(get_db)
 ):
@@ -46,7 +64,13 @@ async def register_group(
     return CreateGroupResponse(message="Group successfully registered")
 
 
-@router.put("/groups/{group_id}", response_model=RegisterScoreResponse)
+@router.put(
+    "/groups/{group_id}",
+    response_model=RegisterScoreResponse,
+    name="register_score",
+    description="Register a score",
+    operation_id="register_score",
+)
 async def register_score(
     score: RegisterScoreRequest, group_id: int, db: AsyncSession = Depends(get_db)
 ):

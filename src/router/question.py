@@ -8,7 +8,13 @@ from src.schema.question import AddQuestionRequest, AddQuestionResponse
 router = APIRouter()
 
 
-@router.post("/question/{quiz_set_id}", response_model=AddQuestionResponse)
+@router.post(
+    "/question/{quiz_set_id}",
+    response_model=AddQuestionResponse,
+    name="add_question",
+    description="Add a question to a quiz set",
+    operation_id="add_question",
+)
 async def add_question(
     quiz_set_id: int, question: AddQuestionRequest, db: AsyncSession = Depends(get_db)
 ):

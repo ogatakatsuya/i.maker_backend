@@ -1,15 +1,13 @@
 from fastapi import FastAPI
 from starlette.middleware.cors import CORSMiddleware
 
-from src.router import quizsets
-from src.router import question
-from src.router import group
+from src.router import group, question, quizsets
 
 app = FastAPI()
 
-app.include_router(quizsets.router)
-app.include_router(question.router)
-app.include_router(group.router)
+app.include_router(quizsets.router, tags=["Quiz Sets"])
+app.include_router(question.router, tags=["Questions"])
+app.include_router(group.router, tags=["Groups"])
 
 app.add_middleware(
     CORSMiddleware,
