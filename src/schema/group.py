@@ -1,9 +1,11 @@
-from pydantic import BaseModel
 from typing import List, Optional
+
+from pydantic import BaseModel
 
 
 class CreateGroupRequest(BaseModel):
     name: str
+    member_num: int
 
 
 class RegisterScoreRequest(BaseModel):
@@ -20,6 +22,7 @@ class RegisterScoreResponse(BaseModel):
 
 class GroupSchema(BaseModel):
     name: str
+    member_num: int
     score: Optional[int]
     quiz_set_id: int
     id: int

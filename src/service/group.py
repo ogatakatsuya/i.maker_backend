@@ -1,9 +1,11 @@
-from sqlalchemy.ext.asyncio import AsyncSession
-from sqlalchemy.exc import IntegrityError
+from typing import List
+
 from sqlalchemy import select
+from sqlalchemy.exc import IntegrityError
+from sqlalchemy.ext.asyncio import AsyncSession
+
 from src.model import Group
 from src.schema.group import GroupSchema
-from typing import List
 
 
 async def get_groups(db: AsyncSession):
@@ -20,8 +22,10 @@ async def get_groups_by_quiz_set_id(db: AsyncSession, quiz_set_id: int):
     return groups_data
 
 
-async def register_group(db: AsyncSession, name: str, quiz_set_id: int):
-    new_group = Group(name=name, quiz_set_id=quiz_set_id)
+async def register_group(
+    db: AsyncSession, name: str, member_num: int, quiz_set_id: int
+):
+    new_group = Group(name=name, quiz_set_id=quiz_set_id, member_num=member_num)
     try:
         db.add(new_group)
         await db.commit()
@@ -41,6 +45,7 @@ def format_group(groups: List[Group]) -> List[GroupSchema]:
     groups_data = [
         GroupSchema(
             name=group.name,
+            member_num=group.member_num,
             score=group.score,
             quiz_set_id=group.quiz_set_id,
             id=group.id,

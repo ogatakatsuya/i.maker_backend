@@ -1,7 +1,7 @@
 from datetime import datetime, timedelta, timezone
 
+from sqlalchemy import Column, DateTime, ForeignKey, Integer, String, UniqueConstraint
 from sqlalchemy.ext.declarative import declarative_base
-from sqlalchemy import Column, Integer, String, ForeignKey, UniqueConstraint, DateTime
 
 Base = declarative_base()
 
@@ -42,6 +42,7 @@ class Group(Base):
 
     id = Column(Integer, primary_key=True, autoincrement=True)
     name = Column(String(100), nullable=False)
+    member_num = Column(Integer, nullable=False)
     score = Column(Integer)
     played_at = Column(DateTime, default=lambda: datetime.now(jp_tz), nullable=False)
     quiz_set_id = Column(

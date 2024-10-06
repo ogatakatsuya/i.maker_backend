@@ -53,7 +53,9 @@ async def register_group(
     group_info: CreateGroupRequest, quiz_set_id: int, db: AsyncSession = Depends(get_db)
 ):
     try:
-        await group_service.register_group(db, group_info.name, quiz_set_id)
+        await group_service.register_group(
+            db, group_info.name, group_info.member_num, quiz_set_id
+        )
     except pymysql.err.IntegrityError as e:
         # MySQLのユニーク制約違反 (Duplicate entry)
         if e.args[0] == 1062:
