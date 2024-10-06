@@ -1,7 +1,9 @@
-from sqlalchemy.ext.asyncio import AsyncSession
-from src.model import QuizSet, Question, Answer
-from sqlalchemy import select
 from collections import defaultdict
+
+from sqlalchemy import select
+from sqlalchemy.ext.asyncio import AsyncSession
+
+from src.model import Answer, Question, QuizSet
 
 
 async def create_quizset(db: AsyncSession, title: str, description: str) -> QuizSet:
@@ -39,6 +41,7 @@ async def get_quiz_set(db: AsyncSession, quiz_set_id: int):
             quiz_set_data = {
                 "id": quiz_set.id,
                 "title": quiz_set.title,
+                "description": quiz_set.description,
                 "questions": [],
             }
 

@@ -1,5 +1,6 @@
-from pydantic import BaseModel
 from typing import List
+
+from pydantic import BaseModel
 
 
 class CreateQuizset(BaseModel):
@@ -30,6 +31,7 @@ class Questions(BaseModel):
 class GetQuizSetResponse(BaseModel):
     id: int
     title: str
+    description: str
     questions: List[Questions]
 
 
