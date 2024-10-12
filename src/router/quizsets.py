@@ -74,6 +74,7 @@ async def delete_quiz_set(quiz_set_id: int, db: AsyncSession = Depends(get_db)):
     response_model=GetQuizSetResponse,
     name="get_quiz_set_by_sub_id",
     description="Get a quiz set by sub ID",
+    operation_id="get_quiz_set_by_sub_id",
 )
 async def get_quiz_set_by_sub_id(sub_id: str, db: AsyncSession = Depends(get_db)):
     try:
