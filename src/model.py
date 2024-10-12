@@ -1,3 +1,4 @@
+import uuid
 from datetime import datetime, timedelta, timezone
 
 from sqlalchemy import Column, DateTime, ForeignKey, Integer, String, UniqueConstraint
@@ -14,6 +15,7 @@ class QuizSet(Base):
     id = Column(Integer, primary_key=True, autoincrement=True)
     title = Column(String(100), nullable=False)
     description = Column(String(1000), nullable=True)
+    sub_id = Column(String(50), default=str(uuid.uuid4()), nullable=False)
 
 
 class Question(Base):

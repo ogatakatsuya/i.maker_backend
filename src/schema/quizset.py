@@ -14,6 +14,7 @@ class CreateQuizSetRequest(CreateQuizset):
 
 class CreateQuizSetResponse(CreateQuizset):
     id: int
+    sub_id: str
 
 
 class Answers(BaseModel):
@@ -33,6 +34,7 @@ class GetQuizSetResponse(BaseModel):
     title: str
     description: str
     questions: List[Questions]
+    sub_id: str
 
 
 class GetQuizSetsResponse(BaseModel):

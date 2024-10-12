@@ -3,6 +3,7 @@ from fastapi import APIRouter, Depends, HTTPException
 from sqlalchemy.ext.asyncio import AsyncSession
 
 import src.service.group as group_service
+import src.service.quizset as quizset_service
 from src.db.session import get_db
 from src.schema.group import (
     CreateGroupRequest,
@@ -78,3 +79,36 @@ async def register_score(
 ):
     await group_service.register_score(db, group_id, score.value)
     return RegisterScoreResponse(message="Score successfully registered")
+
+
+@router.post(
+    "/groups/sub_id/{quiz_set_sub_id}",
+    response_model=CreateGroupResponse,
+    name="register_group_with_sub_id",
+    description="Register a group with quiz set sub ID",
+    operation_id="register_group_with_sub_id",
+)
+async def register_group_with_sub_id(
+    group_info: CreateGroupRequest,
+    quiz_set_sub_id: str,
+    db: AsyncSession = Depends(get_db),
+):
+    try:
+        quiz_set_id = await quizset_service.get_quiz_set_id_by_sub_id(
+            db, quiz_set_sub_id
+        )
+    except ValueError as e:
+        raise HTTPException(status_code=404, detail=str(e))
+    try:
+        await group_service.register_group(
+            db, group_info.name, group_info.member_num, quiz_set_id
+        )
+    except pymysql.err.IntegrityError as e:
+        # MySQLのユニーク制約違反 (Duplicate entry)
+        if e.args[0] == 1062:
+            raise HTTPException(
+                status_code=400, detail="この名前はすでに使われています。"
+            )
+    except:
+        raise
+    return CreateGroupResponse(message="Group successfully registered")

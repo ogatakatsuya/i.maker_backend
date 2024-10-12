@@ -1,4 +1,4 @@
-from fastapi import APIRouter, Depends
+from fastapi import APIRouter, Depends, HTTPException
 from sqlalchemy.ext.asyncio import AsyncSession
 
 import src.service.quizset as quizset_service
@@ -34,7 +34,10 @@ async def get_quiz_sets(db: AsyncSession = Depends(get_db)):
     operation_id="get_quiz_set",
 )
 async def get_quiz_set(quiz_set_id: int, db: AsyncSession = Depends(get_db)):
-    quiz_set = await quizset_service.get_quiz_set(db, quiz_set_id)
+    try:
+        quiz_set = await quizset_service.get_quiz_set(db, quiz_set_id)
+    except ValueError as e:
+        raise HTTPException(status_code=404, detail=str(e))
     return quiz_set
 
 
@@ -64,3 +67,17 @@ async def create_quiz_set(
 async def delete_quiz_set(quiz_set_id: int, db: AsyncSession = Depends(get_db)):
     await quizset_service.delete_quiz_set(db, quiz_set_id)
     return DeleteQuizSetResponse(message="QuizSet deleted successfully")
+
+
+@router.get(
+    "/quiz_sets/sub_id/{sub_id}",
+    response_model=GetQuizSetResponse,
+    name="get_quiz_set_by_sub_id",
+    description="Get a quiz set by sub ID",
+)
+async def get_quiz_set_by_sub_id(sub_id: str, db: AsyncSession = Depends(get_db)):
+    try:
+        quiz_set = await quizset_service.get_quiz_set_by_sub_id(db, sub_id)
+    except ValueError as e:
+        raise HTTPException(status_code=404, detail=str(e))
+    return quiz_set

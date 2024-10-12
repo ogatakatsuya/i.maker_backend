@@ -42,6 +42,7 @@ async def get_quiz_set(db: AsyncSession, quiz_set_id: int):
                 "id": quiz_set.id,
                 "title": quiz_set.title,
                 "description": quiz_set.description,
+                "sub_id": str(quiz_set.sub_id),
                 "questions": [],
             }
 
@@ -77,3 +78,65 @@ async def delete_quiz_set(db: AsyncSession, quiz_set_id: int) -> None:
         raise ValueError(f"QuizSet with id {quiz_set_id} not found")
     await db.delete(row)
     await db.commit()
+
+
+async def get_quiz_set_by_sub_id(db: AsyncSession, sub_id: str):
+    result = await db.execute(
+        select(QuizSet, Question, Answer)
+        .join(Question, QuizSet.id == Question.quiz_set_id)
+        .join(Answer, Question.id == Answer.question_id)
+        .where(QuizSet.sub_id == str(sub_id))
+    )
+
+    rows = result.fetchall()
+    if not rows:
+        raise ValueError(
+            f"QuizSet or Questions or Answers related with id {sub_id} not found"
+        )
+
+    quiz_set_data = {}
+    question_map = defaultdict(list)
+
+    # データの整形
+    for quiz_set, question, answer in rows:
+        # QuizSet情報を設定
+        if not quiz_set_data:
+            quiz_set_data = {
+                "id": quiz_set.id,
+                "title": quiz_set.title,
+                "description": quiz_set.description,
+                "sub_id": str(quiz_set.sub_id),
+                "questions": [],
+            }
+
+        # QuestionにAnswerを追加する
+        question_data = {
+            "id": question.id,
+            "content": question.content,
+            "hint": question.hint,
+            "answers": [],
+        }
+
+        # Answerを追加
+        answer_data = {"id": answer.id, "content": answer.content}
+
+        # Questionに対応するAnswerを集める
+        question_map[question.id].append(answer_data)
+
+        # Question情報をQuizSetに追加
+        if question_data not in quiz_set_data["questions"]:
+            quiz_set_data["questions"].append(question_data)
+
+    # 各Questionに対応するAnswerを紐付け
+    for question in quiz_set_data["questions"]:
+        question["answers"] = question_map[question["id"]]
+
+    return quiz_set_data
+
+
+async def get_quiz_set_id_by_sub_id(db: AsyncSession, sub_id: str):
+    result = await db.execute(select(QuizSet.id).where(QuizSet.sub_id == str(sub_id)))
+    row = result.scalar_one_or_none()
+    if not row:
+        raise ValueError(f"QuizSet with sub_id {sub_id} not found")
+    return row
