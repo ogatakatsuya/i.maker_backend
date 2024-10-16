@@ -8,16 +8,8 @@ class CreateGroupRequest(BaseModel):
     member_num: int
 
 
-class RegisterScoreRequest(BaseModel):
-    value: int
-
-
 class CreateGroupResponse(BaseModel):
-    message: str
-
-
-class RegisterScoreResponse(BaseModel):
-    message: str
+    id: int
 
 
 class GroupSchema(BaseModel):
@@ -35,3 +27,17 @@ class GetGroupsResponse(BaseModel):
 
 class GetGroupsByQuizSetIdResponse(GetGroupsResponse):
     groups: List[GroupSchema]
+
+
+class RegisterScoreResponse(BaseModel):
+    message: str
+
+
+class RegisterScoreRequest(BaseModel):
+    valid_num: int
+    invalid_num: int
+    hint_num: int
+
+
+class GetScoreResponse(BaseModel):
+    score: int

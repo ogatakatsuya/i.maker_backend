@@ -29,16 +29,28 @@ async def register_group(
     try:
         db.add(new_group)
         await db.commit()
+        await db.refresh(new_group)
     except IntegrityError as sqlalchemy_error:
         raise sqlalchemy_error.orig
     return new_group
 
 
-async def register_score(db: AsyncSession, group_id: int, score: int):
+async def register_score(
+    db: AsyncSession, group_id: int, valid: int, invalid: int, hint: int
+):
     result = await db.execute(select(Group).where(Group.id == group_id))
-    group = result.scalars().first()
-    group.score = score
+    try:
+        group = result.scalar_one_or_none()
+        group.score = calculate_score(valid, invalid, hint)
+    except Exception:
+        raise ValueError(f"Group ID {group_id} does not exist")
     await db.commit()
+
+
+async def get_score(db: AsyncSession, group_id: int):
+    result = await db.execute(select(Group).where(Group.id == group_id))
+    group = result.scalar_one_or_none()
+    return group.score
 
 
 def format_group(groups: List[Group]) -> List[GroupSchema]:
@@ -54,3 +66,7 @@ def format_group(groups: List[Group]) -> List[GroupSchema]:
         for group in groups
     ]
     return groups_data
+
+
+def calculate_score(valid: int, invalid: int, hint: int) -> int:
+    return valid * 20 - invalid * 4 - hint * 2

@@ -10,6 +10,7 @@ from src.schema.group import (
     CreateGroupResponse,
     GetGroupsByQuizSetIdResponse,
     GetGroupsResponse,
+    GetScoreResponse,
     RegisterScoreRequest,
     RegisterScoreResponse,
 )
@@ -68,17 +69,31 @@ async def register_group(
 
 
 @router.put(
-    "/groups/{group_id}",
+    "/groups/{group_id}/score",
     response_model=RegisterScoreResponse,
     name="register_score",
     description="Register a score",
     operation_id="register_score",
 )
 async def register_score(
-    score: RegisterScoreRequest, group_id: int, db: AsyncSession = Depends(get_db)
+    parameter: RegisterScoreRequest, group_id: int, db: AsyncSession = Depends(get_db)
 ):
-    await group_service.register_score(db, group_id, score.value)
+    await group_service.register_score(
+        db, group_id, parameter.valid_num, parameter.invalid_num, parameter.hint_num
+    )
     return RegisterScoreResponse(message="Score successfully registered")
+
+
+@router.get(
+    "/groups/{group_id}/score",
+    response_model=GetScoreResponse,
+    name="get_score",
+    description="Get score",
+    operation_id="get_score",
+)
+async def get_score(group_id: int, db: AsyncSession = Depends(get_db)):
+    score = await group_service.get_score(db, group_id)
+    return GetScoreResponse(score=score)
 
 
 @router.post(
@@ -100,7 +115,7 @@ async def register_group_with_sub_id(
     except ValueError as e:
         raise HTTPException(status_code=404, detail=str(e))
     try:
-        await group_service.register_group(
+        new_group = await group_service.register_group(
             db, group_info.name, group_info.member_num, quiz_set_id
         )
     except pymysql.err.IntegrityError as e:
@@ -111,4 +126,4 @@ async def register_group_with_sub_id(
             )
     except:
         raise
-    return CreateGroupResponse(message="Group successfully registered")
+    return CreateGroupResponse(id=new_group.id)
