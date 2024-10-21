@@ -31,5 +31,5 @@ jobs:
                 IMAGE_TAG: "${{ github.sha }}"
               run: |
                 docker build --platform linux/x86_64 -t ${{ env.REPOSITORY_NAME }} .
-                docker tag ${{ env.RAILS_REPOSITORY }}:latest ${{ secrets.AWS_ECR_ENDPOINT }}/${{ env.REPOSITORY_NAME }}:${{ env.IMAGE_TAG }}
+                docker tag ${{ env.REPOSITORY_NAME }}:latest ${{ secrets.AWS_ECR_ENDPOINT }}/${{ env.REPOSITORY_NAME }}:${{ env.IMAGE_TAG }}
                 docker push ${{ secrets.AWS_ECR_ENDPOINT }}/${{ env.REPOSITORY_NAME }}:${{ env.IMAGE_TAG }}
