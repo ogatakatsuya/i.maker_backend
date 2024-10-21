@@ -25,11 +25,11 @@ jobs:
               run: |
                 aws ecr get-login-password --region ap-northeast-1 | docker login --username AWS --password-stdin ${{ secrets.AWS_ECR_ENDPOINT }}
 
-            - name: Image Build & Push to Rails ECR
+            - name: Image Build & Push to ECR
               env:
                 REPOSITORY_NAME: "i.maker"
                 IMAGE_TAG: "${{ github.sha }}"
               run: |
-                docker build --no-cache -f ./docker/staging/Dockerfile --platform linux/x86_64 -t ${{ env.REPOSITORY_NAME }} .
+                docker build --platform linux/x86_64 -t ${{ env.REPOSITORY_NAME }} .
                 docker tag ${{ env.RAILS_REPOSITORY }}:latest ${{ secrets.AWS_ECR_ENDPOINT }}/${{ env.REPOSITORY_NAME }}:${{ env.IMAGE_TAG }}
                 docker push ${{ secrets.AWS_ECR_ENDPOINT }}/${{ env.REPOSITORY_NAME }}:${{ env.IMAGE_TAG }}
