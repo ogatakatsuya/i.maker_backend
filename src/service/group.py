@@ -36,12 +36,17 @@ async def register_group(
 
 
 async def register_score(
-    db: AsyncSession, group_id: int, valid: int, invalid: int, hint: int
+    db: AsyncSession,
+    group_id: int,
+    valid: int,
+    invalid: int,
+    hint: int,
+    is_time_over: bool,
 ):
     result = await db.execute(select(Group).where(Group.id == group_id))
     try:
         group = result.scalar_one_or_none()
-        group.score = calculate_score(valid, invalid, hint)
+        group.score = calculate_score(valid, invalid, hint, is_time_over)
     except Exception:
         raise ValueError(f"Group ID {group_id} does not exist")
     await db.commit()
@@ -50,7 +55,7 @@ async def register_score(
 async def get_score(db: AsyncSession, group_id: int):
     result = await db.execute(select(Group).where(Group.id == group_id))
     group = result.scalar_one_or_none()
-    return group.score
+    return group.score, group.name
 
 
 def format_group(groups: List[Group]) -> List[GroupSchema]:
@@ -68,5 +73,9 @@ def format_group(groups: List[Group]) -> List[GroupSchema]:
     return groups_data
 
 
-def calculate_score(valid: int, invalid: int, hint: int) -> int:
-    return valid * 20 - invalid * 4 - hint * 2
+def calculate_score(valid: int, invalid: int, hint: int, is_time_over: bool) -> int:
+    return (
+        52 + valid * 12 - invalid - hint * 3 - 5
+        if is_time_over
+        else 52 + valid * 12 - invalid - hint * 3
+    )

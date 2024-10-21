@@ -79,7 +79,12 @@ async def register_score(
     parameter: RegisterScoreRequest, group_id: int, db: AsyncSession = Depends(get_db)
 ):
     await group_service.register_score(
-        db, group_id, parameter.valid_num, parameter.invalid_num, parameter.hint_num
+        db,
+        group_id,
+        parameter.correct_num,
+        parameter.incorrect_answers_num,
+        parameter.showed_hint_num,
+        parameter.is_time_over,
     )
     return RegisterScoreResponse(message="Score successfully registered")
 
@@ -92,8 +97,8 @@ async def register_score(
     operation_id="get_score",
 )
 async def get_score(group_id: int, db: AsyncSession = Depends(get_db)):
-    score = await group_service.get_score(db, group_id)
-    return GetScoreResponse(score=score)
+    score, name = await group_service.get_score(db, group_id)
+    return GetScoreResponse(score=score, name=name)
 
 
 @router.post(

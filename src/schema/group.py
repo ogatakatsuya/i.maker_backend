@@ -34,10 +34,12 @@ class RegisterScoreResponse(BaseModel):
 
 
 class RegisterScoreRequest(BaseModel):
-    valid_num: int
-    invalid_num: int
-    hint_num: int
+    correct_num: int
+    incorrect_answers_num: int
+    showed_hint_num: int
+    is_time_over: bool
 
 
 class GetScoreResponse(BaseModel):
     score: int
+    name: str
