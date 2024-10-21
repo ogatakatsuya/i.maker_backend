@@ -30,6 +30,6 @@ jobs:
                 REPOSITORY_NAME: "i.maker"
                 IMAGE_TAG: "${{ github.sha }}"
               run: |
-                docker build -t ${{ env.REPOSITORY_NAME }} --no-cache -f --platform linux/x86_64 .
+                docker build --no-cache -f ./docker/staging/Dockerfile --platform linux/x86_64 -t ${{ env.REPOSITORY_NAME }}.
                 docker tag ${{ env.RAILS_REPOSITORY }}:latest ${{ secrets.AWS_ECR_ENDPOINT }}/${{ env.REPOSITORY_NAME }}:${{ env.IMAGE_TAG }}
                 docker push ${{ secrets.AWS_ECR_ENDPOINT }}/${{ env.REPOSITORY_NAME }}:${{ env.IMAGE_TAG }}
