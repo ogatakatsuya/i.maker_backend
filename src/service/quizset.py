@@ -6,8 +6,8 @@ from sqlalchemy.ext.asyncio import AsyncSession
 from src.model import Answer, Question, QuizSet
 
 
-async def create_quizset(db: AsyncSession, title: str, description: str) -> QuizSet:
-    new_quizset = QuizSet(title=title, description=description)
+async def create_quizset(db: AsyncSession, title: str, description: str, sub_id: str) -> QuizSet:
+    new_quizset = QuizSet(title=title, description=description, sub_id=sub_id)
     db.add(new_quizset)
     await db.commit()
     return new_quizset

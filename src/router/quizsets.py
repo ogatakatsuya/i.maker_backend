@@ -1,3 +1,5 @@
+import uuid
+
 from fastapi import APIRouter, Depends, HTTPException
 from sqlalchemy.ext.asyncio import AsyncSession
 
@@ -51,8 +53,9 @@ async def get_quiz_set(quiz_set_id: int, db: AsyncSession = Depends(get_db)):
 async def create_quiz_set(
     quiz_set: CreateQuizSetRequest, db: AsyncSession = Depends(get_db)
 ):
+    sub_id = str(uuid.uuid4())
     new_quiz_set = await quizset_service.create_quizset(
-        db, quiz_set.title, quiz_set.description
+        db, quiz_set.title, quiz_set.description, sub_id
     )
     return new_quiz_set
 
